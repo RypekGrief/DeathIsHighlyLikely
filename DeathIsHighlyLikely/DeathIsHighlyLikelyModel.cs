@@ -19,6 +19,14 @@ namespace DeathIsHighlyLikely
                 if (!isTournament)
                 {
                     float customProbability = DeathIsHighlyLikelySettings.Instance?.HeroDeathProbability ?? 0.20f;
+                    float multiplier = DeathIsHighlyLikelySettings.Instance?.LordVsLordMultiplier ?? 1.0f;
+
+                    if (multiplier > 1.0f && affectorAgent != null && affectorAgent.IsHero)
+                    {
+                        customProbability *= multiplier;
+
+                        if (customProbability > 1.0f) customProbability = 1.0f;
+                    }
 
                     return customProbability;
                 }
