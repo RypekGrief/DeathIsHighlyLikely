@@ -9,10 +9,18 @@ namespace DeathIsHighlyLikely
     {
         public override float GetSurvivalChance(PartyBase party, CharacterObject character, DamageTypes damageType, bool canDamageKill, PartyBase enemyParty = null)
         {
-            if (character != null && character.IsHero)
+            if (character != null)
             {
-                float deathProb = DeathIsHighlyLikelySettings.Instance?.HeroDeathProbability ?? 0.20f;
-                return 1f - deathProb;
+                if (character.IsHero)
+                {
+                    float deathProb = DeathIsHighlyLikelySettings.Instance?.HeroDeathProbability ?? 0.20f;
+                    return 1f - deathProb;
+                }
+                else if (!character.IsHero)
+                {
+                    float troopDeathProb = DeathIsHighlyLikelySettings.Instance?.TroopDeathProbability ?? 0.40f;
+                    return 1f - troopDeathProb;
+                }
             }
 
             return base.GetSurvivalChance(party, character, damageType, canDamageKill, enemyParty);

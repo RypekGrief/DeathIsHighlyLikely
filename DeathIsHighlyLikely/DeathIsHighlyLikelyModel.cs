@@ -12,11 +12,11 @@ namespace DeathIsHighlyLikely
 
             if (effectedAgent == null) return baseProbability;
 
-            if (effectedAgent.IsHero)
-            {
-                bool isTournament = Mission.Current != null && Mission.Current.Mode == MissionMode.Tournament;
+            bool isTournament = Mission.Current != null && Mission.Current.Mode == MissionMode.Tournament;
 
-                if (!isTournament)
+            if (!isTournament)
+            {
+                if (effectedAgent.IsHero)
                 {
                     float customProbability = DeathIsHighlyLikelySettings.Instance?.HeroDeathProbability ?? 0.20f;
                     float multiplier = DeathIsHighlyLikelySettings.Instance?.LordVsLordMultiplier ?? 1.0f;
@@ -29,6 +29,11 @@ namespace DeathIsHighlyLikely
                     }
 
                     return customProbability;
+                }
+                else if (!effectedAgent.IsHero)
+                {
+                    float troopProbability = DeathIsHighlyLikelySettings.Instance?.TroopDeathProbability ?? 0.40f;
+                    return troopProbability;
                 }
             }
 
