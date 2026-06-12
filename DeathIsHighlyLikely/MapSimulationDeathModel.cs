@@ -15,38 +15,59 @@ namespace DeathIsHighlyLikely
                 var settings = DeathIsHighlyLikelySettings.Instance;
                 if (settings == null) return base.GetSurvivalChance(party, character, damageType, canDamageKill, enemyParty);
 
-                Hero surgeon = party?.MobileParty?.EffectiveSurgeon;
-                Hero enemySurgeon = enemyParty?.MobileParty?.EffectiveSurgeon;
-
-                int medicineSkill = 0;
-                bool hasMinisterOfHealth = false;
-
-                if (surgeon != null)
+                if (character.IsHero && settings.EnableHeroDeathMechanics)
                 {
-                    medicineSkill = surgeon.GetSkillValue(DefaultSkills.Medicine);
-                    hasMinisterOfHealth = surgeon.GetPerkValue(DefaultPerks.Medicine.MinisterOfHealth);
-                }
-                else if (enemySurgeon != null && enemySurgeon.GetPerkValue(DefaultPerks.Medicine.DoctorsOath))
-                {
-                    medicineSkill = enemySurgeon.GetSkillValue(DefaultSkills.Medicine);
-                    hasMinisterOfHealth = enemySurgeon.GetPerkValue(DefaultPerks.Medicine.MinisterOfHealth);
-                }
+                    Hero surgeon = party?.MobileParty?.EffectiveSurgeon;
+                    Hero enemySurgeon = enemyParty?.MobileParty?.EffectiveSurgeon;
 
-                if (character.IsHero)
-                {
+                    int medicineSkill = 0;
+
+                    if (surgeon != null)
+                    {
+                        medicineSkill = surgeon.GetSkillValue(DefaultSkills.Medicine);
+                    }
+
+                    if (enemySurgeon != null && enemySurgeon.GetPerkValue(DefaultPerks.Medicine.DoctorsOath))
+                    {
+                        int enemyMed = enemySurgeon.GetSkillValue(DefaultSkills.Medicine);
+                        if (enemyMed > medicineSkill)
+                        {
+                            medicineSkill = enemyMed;
+                        }
+                    }
+
                     float deathProb = settings.HeroDeathProbability;
-
                     float reduction = medicineSkill * 0.0004f;
                     deathProb -= reduction;
 
                     if (deathProb < 0f) deathProb = 0f;
-
                     return 1f - deathProb;
                 }
-                else
+                else if (!character.IsHero && settings.EnableTroopDeathMechanics)
                 {
-                    float troopDeathProb = settings.TroopDeathProbability;
+                    Hero surgeon = party?.MobileParty?.EffectiveSurgeon;
+                    Hero enemySurgeon = enemyParty?.MobileParty?.EffectiveSurgeon;
 
+                    int medicineSkill = 0;
+                    bool hasMinisterOfHealth = false;
+
+                    if (surgeon != null)
+                    {
+                        medicineSkill = surgeon.GetSkillValue(DefaultSkills.Medicine);
+                        hasMinisterOfHealth = surgeon.GetPerkValue(DefaultPerks.Medicine.MinisterOfHealth);
+                    }
+
+                    if (enemySurgeon != null && enemySurgeon.GetPerkValue(DefaultPerks.Medicine.DoctorsOath))
+                    {
+                        int enemyMed = enemySurgeon.GetSkillValue(DefaultSkills.Medicine);
+                        if (enemyMed > medicineSkill)
+                        {
+                            medicineSkill = enemyMed;
+                            hasMinisterOfHealth = enemySurgeon.GetPerkValue(DefaultPerks.Medicine.MinisterOfHealth);
+                        }
+                    }
+
+                    float troopDeathProb = settings.TroopDeathProbability;
                     float reduction = medicineSkill * 0.001f;
                     troopDeathProb -= reduction;
 

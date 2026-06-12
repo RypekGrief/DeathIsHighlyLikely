@@ -23,28 +23,30 @@ namespace DeathIsHighlyLikely
                 var settings = DeathIsHighlyLikelySettings.Instance;
                 if (settings == null) return baseProbability;
 
-                PartyBase party = (effectedAgent.Origin as PartyAgentOrigin)?.Party;
-                PartyBase enemyParty = (affectorAgent?.Origin as PartyAgentOrigin)?.Party;
-
-                Hero surgeon = party?.MobileParty?.EffectiveSurgeon;
-                Hero enemySurgeon = enemyParty?.MobileParty?.EffectiveSurgeon;
-
-                int medicineSkill = 0;
-                bool hasMinisterOfHealth = false;
-
-                if (surgeon != null)
+                if (effectedAgent.IsHero && settings.EnableHeroDeathMechanics)
                 {
-                    medicineSkill = surgeon.GetSkillValue(DefaultSkills.Medicine);
-                    hasMinisterOfHealth = surgeon.GetPerkValue(DefaultPerks.Medicine.MinisterOfHealth);
-                }
-                else if (enemySurgeon != null && enemySurgeon.GetPerkValue(DefaultPerks.Medicine.DoctorsOath))
-                {
-                    medicineSkill = enemySurgeon.GetSkillValue(DefaultSkills.Medicine);
-                    hasMinisterOfHealth = enemySurgeon.GetPerkValue(DefaultPerks.Medicine.MinisterOfHealth);
-                }
+                    PartyBase party = (effectedAgent.Origin as PartyAgentOrigin)?.Party;
+                    PartyBase enemyParty = (affectorAgent?.Origin as PartyAgentOrigin)?.Party;
 
-                if (effectedAgent.IsHero)
-                {
+                    Hero surgeon = party?.MobileParty?.EffectiveSurgeon;
+                    Hero enemySurgeon = enemyParty?.MobileParty?.EffectiveSurgeon;
+
+                    int medicineSkill = 0;
+
+                    if (surgeon != null)
+                    {
+                        medicineSkill = surgeon.GetSkillValue(DefaultSkills.Medicine);
+                    }
+
+                    if (enemySurgeon != null && enemySurgeon.GetPerkValue(DefaultPerks.Medicine.DoctorsOath))
+                    {
+                        int enemyMed = enemySurgeon.GetSkillValue(DefaultSkills.Medicine);
+                        if (enemyMed > medicineSkill)
+                        {
+                            medicineSkill = enemyMed;
+                        }
+                    }
+
                     float customProbability = settings.HeroDeathProbability;
                     float multiplier = settings.LordVsLordMultiplier;
 
@@ -61,10 +63,34 @@ namespace DeathIsHighlyLikely
 
                     return customProbability;
                 }
-                else
+                else if (!effectedAgent.IsHero && settings.EnableTroopDeathMechanics)
                 {
-                    float troopProbability = settings.TroopDeathProbability;
+                    PartyBase party = (effectedAgent.Origin as PartyAgentOrigin)?.Party;
+                    PartyBase enemyParty = (affectorAgent?.Origin as PartyAgentOrigin)?.Party;
 
+                    Hero surgeon = party?.MobileParty?.EffectiveSurgeon;
+                    Hero enemySurgeon = enemyParty?.MobileParty?.EffectiveSurgeon;
+
+                    int medicineSkill = 0;
+                    bool hasMinisterOfHealth = false;
+
+                    if (surgeon != null)
+                    {
+                        medicineSkill = surgeon.GetSkillValue(DefaultSkills.Medicine);
+                        hasMinisterOfHealth = surgeon.GetPerkValue(DefaultPerks.Medicine.MinisterOfHealth);
+                    }
+
+                    if (enemySurgeon != null && enemySurgeon.GetPerkValue(DefaultPerks.Medicine.DoctorsOath))
+                    {
+                        int enemyMed = enemySurgeon.GetSkillValue(DefaultSkills.Medicine);
+                        if (enemyMed > medicineSkill)
+                        {
+                            medicineSkill = enemyMed;
+                            hasMinisterOfHealth = enemySurgeon.GetPerkValue(DefaultPerks.Medicine.MinisterOfHealth);
+                        }
+                    }
+
+                    float troopProbability = settings.TroopDeathProbability;
                     float reduction = medicineSkill * 0.001f;
                     troopProbability -= reduction;
 

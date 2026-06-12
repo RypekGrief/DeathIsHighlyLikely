@@ -6,10 +6,14 @@ namespace DeathIsHighlyLikely
 {
     public class DeathIsHighlyLikelySettings : AttributeGlobalSettings<DeathIsHighlyLikelySettings>
     {
-        public override string Id => "DeathIsHighlyLikely_v3_1_0_";
+        public override string Id => "DeathIsHighlyLikely_v3_1_1_Fix";
         public override string DisplayName => "Death Is Highly Likely";
         public override string FolderName => "DeathIsHighlyLikely";
         public override string FormatType => "json2";
+
+        [SettingPropertyBool("Enable Hero Death Mechanics", Order = 0, RequireRestart = false, HintText = "Turn on/off custom death mechanics for heroes. If off, reverts to Vanilla.")]
+        [SettingPropertyGroup("Hero Settings", GroupOrder = 1)]
+        public bool EnableHeroDeathMechanics { get; set; } = true;
 
         [SettingPropertyFloatingInteger("Hero Death Probability", 0.0f, 1.0f, "0.00", Order = 1, RequireRestart = false, HintText = "Determines the base probability of heroes/lords dying in battle. (Set to 1.0 for 100%)")]
         [SettingPropertyGroup("Hero Settings", GroupOrder = 1)]
@@ -18,6 +22,10 @@ namespace DeathIsHighlyLikely
         [SettingPropertyFloatingInteger("Lord vs. Lord Multiplier", 1.0f, 5.0f, "0.0", Order = 2, RequireRestart = false, HintText = "Multiplies the death chance when two heroes clash. (Set to 1.0 to disable this feature)")]
         [SettingPropertyGroup("Hero Settings", GroupOrder = 1)]
         public float LordVsLordMultiplier { get; set; } = 1.5f;
+
+        [SettingPropertyBool("Enable Troop Death Mechanics", Order = 0, RequireRestart = false, HintText = "Turn on/off custom death mechanics for regular troops. If off, reverts to Vanilla.")]
+        [SettingPropertyGroup("Troop Settings", GroupOrder = 2)]
+        public bool EnableTroopDeathMechanics { get; set; } = true;
 
         [SettingPropertyFloatingInteger("Troop Death Probability", 0.0f, 1.0f, "0.00", Order = 1, RequireRestart = false, HintText = "Determines the base probability of regular troops dying instead of being wounded. (Set to 1.0 for 100%)")]
         [SettingPropertyGroup("Troop Settings", GroupOrder = 2)]
