@@ -58,6 +58,36 @@ namespace DeathIsHighlyLikely
                     float reduction = medicineSkill * 0.0004f;
                     customProbability -= reduction;
 
+                    // YAŞ FAKTÖRÜ (v3.2.0)
+                    if (settings.EnableAgeFactor && effectedAgent.Character is CharacterObject character)
+                    {
+                        Hero victimHero = character.HeroObject;
+                        if (victimHero != null)
+                        {
+                            float ageMultiplier = 1.0f;
+                            if (victimHero.Age >= 70f)
+                                ageMultiplier = 1.5f;
+                            else if (victimHero.Age >= 60f)
+                                ageMultiplier = 1.2f;
+                            else if (victimHero.Age >= 50f)
+                                ageMultiplier = 1.1f;
+
+                            // HealthAdvise perk'ü: Klan liderinde varsa çarpanları azalt
+                            if (ageMultiplier > 1.0f && victimHero.Clan?.Leader != null
+                                && victimHero.Clan.Leader.GetPerkValue(DefaultPerks.Medicine.HealthAdvise))
+                            {
+                                if (ageMultiplier == 1.5f)
+                                    ageMultiplier = 1.35f;
+                                else if (ageMultiplier == 1.2f)
+                                    ageMultiplier = 1.1f;
+                                else if (ageMultiplier == 1.1f)
+                                    ageMultiplier = 1.05f;
+                            }
+
+                            customProbability *= ageMultiplier;
+                        }
+                    }
+
                     if (customProbability < 0f) customProbability = 0f;
                     if (customProbability > 1.0f) customProbability = 1.0f;
 

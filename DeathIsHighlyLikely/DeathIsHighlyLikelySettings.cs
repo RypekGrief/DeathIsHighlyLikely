@@ -1,4 +1,5 @@
-﻿using MCM.Abstractions.Attributes;
+﻿// DeathIsHighlyLikelySettings.cs
+using MCM.Abstractions.Attributes;
 using MCM.Abstractions.Attributes.v2;
 using MCM.Abstractions.Base.Global;
 
@@ -6,7 +7,7 @@ namespace DeathIsHighlyLikely
 {
     public class DeathIsHighlyLikelySettings : AttributeGlobalSettings<DeathIsHighlyLikelySettings>
     {
-        public override string Id => "DeathIsHighlyLikely_v3_1_1_Fix";
+        public override string Id => "DeathIsHighlyLikely_v3_2_0";
         public override string DisplayName => "Death Is Highly Likely";
         public override string FolderName => "DeathIsHighlyLikely";
         public override string FormatType => "json2";
@@ -22,6 +23,10 @@ namespace DeathIsHighlyLikely
         [SettingPropertyFloatingInteger("Lord vs. Lord Multiplier", 1.0f, 5.0f, "0.0", Order = 2, RequireRestart = false, HintText = "Multiplies the death chance when two heroes clash. (Set to 1.0 to disable this feature)")]
         [SettingPropertyGroup("Hero Settings", GroupOrder = 1)]
         public float LordVsLordMultiplier { get; set; } = 1.5f;
+
+        [SettingPropertyBool("Enable Age Factor", Order = 3, RequireRestart = false, HintText = "Older heroes have increased death probability. Health Advice perk on clan leader reduces this effect.")]
+        [SettingPropertyGroup("Hero Settings", GroupOrder = 1)]
+        public bool EnableAgeFactor { get; set; } = true;
 
         [SettingPropertyBool("Enable Troop Death Mechanics", Order = 0, RequireRestart = false, HintText = "Turn on/off custom death mechanics for regular troops. If off, reverts to Vanilla.")]
         [SettingPropertyGroup("Troop Settings", GroupOrder = 2)]
