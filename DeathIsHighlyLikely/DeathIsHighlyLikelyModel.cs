@@ -8,8 +8,10 @@ using TaleWorlds.CampaignSystem.AgentOrigins;
 
 namespace DeathIsHighlyLikely
 {
+    /// <summary>Overrides SandboxAgentDecideKilledOrUnconsciousModel to inject custom hero and troop death probability calculations for 3D battles.</summary>
     public class DeathIsHighlyLikelyModel : SandboxAgentDecideKilledOrUnconsciousModel
     {
+        /// <summary>Calculates the probability that an agent is killed (rather than wounded) after receiving damage. Applies MCM settings, surgeon skill, perks, age factor, and siege multiplier. Tournaments are excluded.</summary>
         public override float GetAgentStateProbability(Agent affectorAgent, Agent effectedAgent, DamageTypes damageType, WeaponFlags weaponFlags, out float useSurgeryProbability)
         {
             float baseProbability = base.GetAgentStateProbability(affectorAgent, effectedAgent, damageType, weaponFlags, out useSurgeryProbability);
@@ -88,6 +90,11 @@ namespace DeathIsHighlyLikely
                         }
                     }
 
+                    if (settings.EnableSiegeDeathRateIncrease && Mission.Current != null && Mission.Current.IsSiegeBattle)
+                    {
+                        customProbability *= 1.05f;
+                    }
+
                     if (customProbability < 0f) customProbability = 0f;
                     if (customProbability > 1.0f) customProbability = 1.0f;
 
@@ -125,6 +132,11 @@ namespace DeathIsHighlyLikely
                     troopProbability -= reduction;
 
                     if (troopProbability < 0f) troopProbability = 0f;
+
+                    if (settings.EnableSiegeDeathRateIncrease && Mission.Current != null && Mission.Current.IsSiegeBattle)
+                    {
+                        troopProbability *= 1.15f;
+                    }
 
                     if (hasMinisterOfHealth)
                     {

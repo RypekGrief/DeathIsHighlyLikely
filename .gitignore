@@ -361,3 +361,11 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# DeathIsHighlyLikely project documentation
+AGENTS.md
+History.md
+HowWork.md
+Log_DIHL.md
+Log_MasterSmith.md
+Log_TestMod.md

@@ -1,13 +1,16 @@
 ﻿using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.GameComponents;
+using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.Core;
 
 namespace DeathIsHighlyLikely
 {
+    /// <summary>Overrides DefaultPartyHealingModel to inject custom hero and troop survival chance calculations for campaign map simulations (AI vs AI, Send Troops).</summary>
     public class MapSimulationDeathModel : DefaultPartyHealingModel
     {
+        /// <summary>Calculates the chance a character survives a simulation battle. Applies MCM settings, surgeon skill, perks, and siege multiplier. Returns survival chance (1.0 minus death probability).</summary>
         public override float GetSurvivalChance(PartyBase party, CharacterObject character, DamageTypes damageType, bool canDamageKill, PartyBase enemyParty = null)
         {
             if (character != null)
@@ -39,6 +42,11 @@ namespace DeathIsHighlyLikely
                     float deathProb = settings.HeroDeathProbability;
                     float reduction = medicineSkill * 0.0004f;
                     deathProb -= reduction;
+
+                    if (settings.EnableSiegeDeathRateIncrease && party?.MapEvent?.IsSiegeAssault == true)
+                    {
+                        deathProb *= 1.05f;
+                    }
 
                     if (deathProb < 0f) deathProb = 0f;
                     return 1f - deathProb;
@@ -72,6 +80,11 @@ namespace DeathIsHighlyLikely
                     troopDeathProb -= reduction;
 
                     if (troopDeathProb < 0f) troopDeathProb = 0f;
+
+                    if (settings.EnableSiegeDeathRateIncrease && party?.MapEvent?.IsSiegeAssault == true)
+                    {
+                        troopDeathProb *= 1.15f;
+                    }
 
                     if (hasMinisterOfHealth)
                     {
